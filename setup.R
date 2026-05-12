@@ -1,71 +1,80 @@
-# =========================
-# FRASER SETUP AUTOMATIQUE
-# =========================
+message("===================================")
+message("  FRASER PIPELINE SETUP (ROBUST)   ")
+message("===================================")
 
-cat("\n=== INSTALLATION FRASER PIPELINE ===\n")
-
-# =========================
-# 1. CRAN PACKAGES
-# =========================
-
-cran_packages <- c(
-  "data.table",
-  "httr",
-  "Matrix",
-  "codetools"
-)
-
-install_if_missing <- function(pkg) {
-  if (!requireNamespace(pkg, quietly = TRUE)) {
-    install.packages(pkg, repos = "https://cloud.r-project.org")
-  }
-}
-
-cat("\nInstalling CRAN packages...\n")
-invisible(lapply(cran_packages, install_if_missing))
-
-# =========================
-# 2. BIOCONDUCTOR
-# =========================
-
+# BiocManager safe init
 if (!requireNamespace("BiocManager", quietly = TRUE)) {
   install.packages("BiocManager", repos = "https://cloud.r-project.org")
 }
 
-options(repos = BiocManager::repositories())
+BiocManager::version()
+
+# -------------------------------------------------
+# Packages required
+# -------------------------------------------------
+
+cran_packages <- c(
+  "dplyr",
+  "tidyr",
+  "data.table"
+)
 
 bioc_packages <- c(
   "FRASER",
   "BiocParallel",
-  "TxDb.Hsapiens.UCSC.hg38.knownGene",
-  "org.Hs.eg.db",
-  "SummarizedExperiment",
+  "Rsamtools",
   "GenomicRanges",
-  "S4Vectors",
+  "SummarizedExperiment",
+  "Biobase",
   "IRanges",
   "Biostrings",
-  "Rsamtools"
+  "XVector",
+  "MatrixGenerics",
+  "TxDb.Hsapiens.UCSC.hg38.knownGene",
+  "org.Hs.eg.db"
 )
 
-cat("\nInstalling Bioconductor packages...\n")
+# -------------------------------------------------
+# Install CRAN packages (only if missing)
+# -------------------------------------------------
+message("Checking CRAN packages...")
+
+for (pkg in cran_packages) {
+  if (!requireNamespace(pkg, quietly = TRUE)) {
+    message("Installing CRAN package: ", pkg)
+    install.packages(pkg, repos = "https://cloud.r-project.org")
+  }
+}
+
+# -------------------------------------------------
+# Install Bioconductor packages (safe mode)
+# -------------------------------------------------
+message("Checking Bioconductor packages...")
 
 for (pkg in bioc_packages) {
   if (!requireNamespace(pkg, quietly = TRUE)) {
+    message("Installing Bioconductor package: ", pkg)
     BiocManager::install(pkg, ask = FALSE, update = FALSE)
   }
 }
 
-# =========================
-# 3. VERIFICATION
-# =========================
+# -------------------------------------------------
+# Avoid breaking system packages (important in conda)
+# -------------------------------------------------
+message("Setting Bioconductor config...")
+options(
+  repos = BiocManager::repositories(),
+  BioC_mirror = "https://bioconductor.org"
+)
 
-cat("\n=== VERIFICATION ===\n")
+# -------------------------------------------------
+# Final verification
+# -------------------------------------------------
+message("===================================")
+message("Verifying installation...")
 
-library(data.table)
 library(FRASER)
-library(BiocParallel)
 
-cat("\nFRASER version:\n")
-print(packageVersion("FRASER"))
-
-cat("\n=== INSTALLATION COMPLETE ===\n")
+message("✔ FRASER loaded successfully")
+message("✔ Setup complete")
+message("===================================")
