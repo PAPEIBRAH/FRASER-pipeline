@@ -33,6 +33,8 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
 BiocManager::install("FRASER")
 BiocManager::install("TxDb.Hsapiens.UCSC.hg38.knownGene")
 BiocManager::install("org.Hs.eg.db")
+install.packages("data.table")
+BiocManager::install("BiocParallel")
 ```
 
 ---
