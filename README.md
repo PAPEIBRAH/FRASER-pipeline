@@ -12,3 +12,9 @@ cd FRASER-pipeline
 
 conda env create -f environment.yml
 conda activate fraser_env
+
+
+
+# Ouvrir R
+```bash
+R
