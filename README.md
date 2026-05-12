@@ -15,6 +15,15 @@ conda activate fraser_env
 ```
 
 ---
+# Installation automatique
+
+```bash
+Rscript setup.R
+
+
+
+
+
 
 # 2. Installation des dépendances R
 
