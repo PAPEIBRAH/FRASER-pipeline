@@ -16,5 +16,11 @@ conda activate fraser_env
 
 
 # Ouvrir R
-```bash
 R
+
+if (!requireNamespace("BiocManager", quietly = TRUE))
+  install.packages("BiocManager")
+#
+BiocManager::install("FRASER")
+BiocManager::install("TxDb.Hsapiens.UCSC.hg38.knownGene")
+BiocManager::install("org.Hs.eg.db")
