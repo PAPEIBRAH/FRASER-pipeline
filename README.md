@@ -7,7 +7,7 @@ Pipeline pour détecter des anomalies d’épissage (RNA-seq BAM).
 # 1. Installation
 
 ```bash
-git clone https://github.com/TON_USERNAME/FRASER-pipeline.git
+git clone https://github.com/PAPEIBRAH/FRASER-pipeline.git
 cd FRASER-pipeline
 
 conda env create -f environment.yml
