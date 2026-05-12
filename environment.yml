@@ -3,45 +3,41 @@ name: fraser_env
 channels:
   - conda-forge
   - bioconda
-  - defaults
 
 dependencies:
-  # ─────────────────────────────
-  # Core R
-  # ─────────────────────────────
+  # ---------------------------
+  # R CORE
+  # ---------------------------
   - r-base=4.5
   - r-essentials
-  - r-devtools
 
-  # ─────────────────────────────
-  # Bioconductor core stack
-  # ─────────────────────────────
+  # ---------------------------
+  # FRASER CORE STACK (LOCKED COMPATIBLE)
+  # ---------------------------
   - bioconductor-fraser
-  - bioconductor-biocparallel
-  - bioconductor-rsamtools
-  - bioconductor-genomicranges
+  - bioconductor-delayedarray
   - bioconductor-summarizedexperiment
-  - bioconductor-biobase
+  - bioconductor-s4vectors
+  - bioconductor-biocparallel
+  - bioconductor-genomicranges
   - bioconductor-iranges
+  - bioconductor-biobase
   - bioconductor-biostrings
+  - bioconductor-rsamtools
   - bioconductor-xvector
-  - bioconductor-matrixgenerics
 
-  # Annotation packages
+  # Annotation
   - bioconductor-txdb.hsapiens.ucsc.hg38.knowngene
   - bioconductor-org.hs.eg.db
 
-  # ─────────────────────────────
-  # CRAN dependencies (IMPORTANT: precompiled via conda)
-  # ─────────────────────────────
+  # ---------------------------
+  # CRAN SAFE (NO COMPILATION)
+  # ---------------------------
+  - r-data.table
   - r-curl
   - r-httr
-  - r-data.table
-  - r-dplyr
-  - r-tidyr
-  - r-readr
 
-  # system libs (avoid compile issues)
+  # system libs (important stability)
   - libcurl
   - openssl
   - zlib
