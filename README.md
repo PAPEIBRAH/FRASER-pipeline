@@ -22,20 +22,6 @@ Rscript setup.R
 
 ---
 
-# 3. Vérification
-
-Dans R :
-
-```r
-library(data.table)
-library(FRASER)
-library(BiocParallel)
-library(TxDb.Hsapiens.UCSC.hg38.knownGene)
-library(org.Hs.eg.db)
-
-packageVersion("FRASER")
-```
-
 ---
 
 # 4. RUN (exécution du pipeline)
