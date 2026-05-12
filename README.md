@@ -35,6 +35,7 @@ BiocManager::install("TxDb.Hsapiens.UCSC.hg38.knownGene")
 BiocManager::install("org.Hs.eg.db")
 install.packages("data.table")
 BiocManager::install("BiocParallel")
+install.packages("codetools")
 ```
 
 ---
