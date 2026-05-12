@@ -2,7 +2,7 @@
 
 Pipeline pour détecter des anomalies d’épissage (RNA-seq BAM).
 
-Ce pipeline utilise **FRASER (Bioconductor)** pour identifier des événements d’épissage aberrants à partir de données RNA-seq alignées (BAM).
+Ce pipeline utilise **FRASER** pour identifier des événements d’épissage aberrants à partir de données RNA-seq alignées (BAM).
 
 ---
 
