@@ -8,17 +8,28 @@ library(BiocParallel)
 library(TxDb.Hsapiens.UCSC.hg38.knownGene)
 library(org.Hs.eg.db)
 
-# GLOBAL VARIABLES
+
+# ARGUMENTS (LOCAL USE)
+
+
+args <- commandArgs(trailingOnly = TRUE)
+
+if (length(args) < 2) {
+  stop("Usage: Rscript run_fraser.R <bam_folder> <output_folder>")
+}
+
+bamFolder <- args[1]
+workingDir <- args[2]
+
+# REFERENCES
 
 
 txdb <- TxDb.Hsapiens.UCSC.hg38.knownGene
 orgDb <- org.Hs.eg.db
 
-workingDir <- "results/"
-bamFolder <- "example_data/"
-
 
 # GET BAM FILES
+
 
 bamFiles <- list.files(
   bamFolder,
@@ -27,22 +38,25 @@ bamFiles <- list.files(
 )
 
 if (length(bamFiles) == 0) {
-  stop("No BAM files found in example_data/")
+  stop("No BAM files found in the provided folder")
 }
 
+# SAMPLE TABLE (GENERIC)
+
+
+
 sampleTable <- data.table(
-  sampleID = substr(basename(bamFiles), 1, 17),
+  sampleID = tools::file_path_sans_ext(basename(bamFiles)),
   bamFile = bamFiles
 )
-
 
 # PARALLELIZATION
 
 
 register(MulticoreParam(workers = 10))
 
+# FRASER DATASET
 
-# CREATE FRASER DATASET
 
 
 fds <- FraserDataSet(
@@ -52,7 +66,6 @@ fds <- FraserDataSet(
 
 strandSpecific(fds) <- "no"
 pairedEnd(fds) <- TRUE
-
 
 # COUNT + PSI
 
@@ -72,12 +85,10 @@ fds <- filterExpressionAndVariability(
   filter = TRUE
 )
 
-
 # RUN FRASER
 
 
 fds <- FRASER(fds)
-
 
 # ANNOTATION
 
@@ -88,8 +99,8 @@ fds <- annotateRangesWithTxDb(
   orgDb = orgDb
 )
 
-# STATISTICS
 
+# STATISTICS
 
 fds <- calculatePvalues(fds, type = "jaccard")
 
@@ -99,17 +110,18 @@ fds <- calculatePadjValues(
   method = "BY"
 )
 
-
 # EXPORT RESULTS
 
 
 res <- results(fds)
 res_df <- as.data.frame(res)
 
-data.table::fwrite(
+dir.create(workingDir, showWarnings = FALSE, recursive = TRUE)
+
+fwrite(
   res_df,
   file.path(workingDir, "ALL_results.tsv"),
   sep = "\t"
 )
 
-cat("FRASER analysis completed successfully\n")
+cat("\nFRASER analysis completed successfully\n")
