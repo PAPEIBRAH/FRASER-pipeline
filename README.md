@@ -20,34 +20,6 @@ conda activate fraser_env
 ```bash
 Rscript setup.R
 
-
-
-
-
-
-# 2. Installation des dépendances R
-
-Ouvrir R :
-
-```bash
-R
-```
-
-Puis exécuter :
-
-```r
-if (!requireNamespace("BiocManager", quietly = TRUE))
-  install.packages("BiocManager")
-
-BiocManager::install("FRASER")
-BiocManager::install("TxDb.Hsapiens.UCSC.hg38.knownGene")
-BiocManager::install("org.Hs.eg.db")
-install.packages("data.table")
-install.packages("codetools")
-BiocManager::install("BiocParallel")
-
-```
-
 ---
 
 # 3. Vérification
