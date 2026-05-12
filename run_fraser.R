@@ -1,16 +1,12 @@
-
-# LOAD LIBRARIES
-
-
 library(data.table)
 library(FRASER)
 library(BiocParallel)
 library(TxDb.Hsapiens.UCSC.hg38.knownGene)
 library(org.Hs.eg.db)
 
-
-# ARGUMENTS (LOCAL USE)
-
+# =========================
+# INPUT ARGUMENTS
+# =========================
 
 args <- commandArgs(trailingOnly = TRUE)
 
@@ -21,62 +17,45 @@ if (length(args) < 2) {
 bamFolder <- args[1]
 workingDir <- args[2]
 
+# =========================
 # REFERENCES
-
+# =========================
 
 txdb <- TxDb.Hsapiens.UCSC.hg38.knownGene
 orgDb <- org.Hs.eg.db
 
+# =========================
+# BAM FILES
+# =========================
 
-# GET BAM FILES
-
-
-bamFiles <- list.files(
-  bamFolder,
-  pattern = "*.bam$",
-  full.names = TRUE
-)
+bamFiles <- list.files(bamFolder, pattern="*.bam$", full.names=TRUE)
 
 if (length(bamFiles) == 0) {
-  stop("No BAM files found in the provided folder")
+  stop("No BAM files found")
 }
-
-# SAMPLE TABLE (GENERIC)
-
-
 
 sampleTable <- data.table(
   sampleID = tools::file_path_sans_ext(basename(bamFiles)),
   bamFile = bamFiles
 )
 
-# PARALLELIZATION
-
+# =========================
+# PARALLEL
+# =========================
 
 register(MulticoreParam(workers = 10))
 
-# FRASER DATASET
+# =========================
+# FRASER
+# =========================
 
-
-
-fds <- FraserDataSet(
-  colData = sampleTable,
-  workingDir = workingDir
-)
+fds <- FraserDataSet(colData = sampleTable, workingDir = workingDir)
 
 strandSpecific(fds) <- "no"
 pairedEnd(fds) <- TRUE
 
-# COUNT + PSI
-
-
-fds <- countRNAData(fds, recount = FALSE)
-
+fds <- countRNAData(fds)
 fds <- calculatePSIValues(fds)
-
-
-# FILTERING
-
 
 fds <- filterExpressionAndVariability(
   fds,
@@ -85,43 +64,30 @@ fds <- filterExpressionAndVariability(
   filter = TRUE
 )
 
-# RUN FRASER
-
-
 fds <- FRASER(fds)
 
+# =========================
 # ANNOTATION
+# =========================
 
+fds <- annotateRangesWithTxDb(fds, txdb = txdb, orgDb = orgDb)
 
-fds <- annotateRangesWithTxDb(
-  fds,
-  txdb = txdb,
-  orgDb = orgDb
-)
+# =========================
+# STATS
+# =========================
 
+fds <- calculatePvalues(fds, type="jaccard")
 
-# STATISTICS
+fds <- calculatePadjValues(fds, type="jaccard", method="BY")
 
-fds <- calculatePvalues(fds, type = "jaccard")
+# =========================
+# OUTPUT
+# =========================
 
-fds <- calculatePadjValues(
-  fds,
-  type = "jaccard",
-  method = "BY"
-)
+res <- as.data.frame(results(fds))
 
-# EXPORT RESULTS
+dir.create(workingDir, recursive = TRUE, showWarnings = FALSE)
 
+fwrite(res, file.path(workingDir, "ALL_results.tsv"), sep="\t")
 
-res <- results(fds)
-res_df <- as.data.frame(res)
-
-dir.create(workingDir, showWarnings = FALSE, recursive = TRUE)
-
-fwrite(
-  res_df,
-  file.path(workingDir, "ALL_results.tsv"),
-  sep = "\t"
-)
-
-cat("\nFRASER analysis completed successfully\n")
+cat("\nDONE: FRASER analysis completed\n")
