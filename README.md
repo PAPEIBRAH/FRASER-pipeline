@@ -12,24 +12,61 @@ cd FRASER-pipeline
 
 conda env create -f environment.yml
 conda activate fraser_env
+```
 
+---
 
+# 2. Installation des dépendances R
 
-# Ouvrir R
+Ouvrir R :
+
+```bash
 R
+```
 
+Puis exécuter :
+
+```r
 if (!requireNamespace("BiocManager", quietly = TRUE))
   install.packages("BiocManager")
 
-# Fraser et ses dependances
 BiocManager::install("FRASER")
 BiocManager::install("TxDb.Hsapiens.UCSC.hg38.knownGene")
 BiocManager::install("org.Hs.eg.db")
+```
 
-# verification
+---
+
+# 3. Vérification
+
+Dans R :
+
+```r
 library(data.table)
 library(FRASER)
 library(BiocParallel)
 library(TxDb.Hsapiens.UCSC.hg38.knownGene)
 library(org.Hs.eg.db)
+
 packageVersion("FRASER")
+```
+
+---
+
+# 4. RUN (exécution du pipeline)
+
+Pour lancer l’analyse FRASER :
+
+```bash
+Rscript run_fraser.R /path/to/BAM /path/to/results
+```
+
+---
+
+# 5. Résultats
+
+Les résultats seront générés ici :
+
+```text
+/path/to/results/ALL_results.tsv
+```
